@@ -10,7 +10,10 @@ AI powered document scanner built with Python and OpenCV.
 - Document detection
 - Perspective correction
 - Image enhancement
-- PDF generation (Coming Soon)
+- Noise reduction and shadow cleanup
+- Multiple scan modes
+- Batch processing
+- PDF generation
 
 ## Setup
 
@@ -31,6 +34,29 @@ Scan a different image from the `input` directory:
 
 ```bash
 python -m app.main receipt.jpg
+```
+
+Choose an enhancement mode:
+
+```bash
+python -m app.main receipt.jpg --mode bw
+python -m app.main receipt.jpg --mode color
+python -m app.main receipt.jpg --mode gray
+python -m app.main receipt.jpg --mode soft
+python -m app.main receipt.jpg --mode ocr
+```
+
+Scan every supported image in the `input` directory:
+
+```bash
+python -m app.main --batch
+```
+
+Save enhanced scans as a PDF:
+
+```bash
+python -m app.main document.jpeg --pdf
+python -m app.main --batch --pdf
 ```
 
 Open preview windows after saving output files:

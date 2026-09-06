@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+from app.config import settings
+
 
 class PerspectiveTransformer:
     """
@@ -50,4 +52,27 @@ class PerspectiveTransformer:
 
         matrix = cv2.getPerspectiveTransform(ordered, destination)
 
-        return cv2.warpPerspective(image, matrix, (max_width, max_height))
+        warped = cv2.warpPerspective(image, matrix, (max_width, max_height))
+        warped = PerspectiveTransformer.rotate_to_portrait(warped)
+
+        return PerspectiveTransformer.crop_border(warped)
+
+    @staticmethod
+    def rotate_to_portrait(image):
+        height, width = image.shape[:2]
+
+        if width > height:
+            return cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+
+        return image
+
+    @staticmethod
+    def crop_border(image):
+        height, width = image.shape[:2]
+        crop_x = int(width * settings.BORDER_CROP_RATIO)
+        crop_y = int(height * settings.BORDER_CROP_RATIO)
+
+        if crop_x == 0 and crop_y == 0:
+            return image
+
+        return image[crop_y : height - crop_y, crop_x : width - crop_x]

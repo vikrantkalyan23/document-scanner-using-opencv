@@ -16,13 +16,13 @@ class PerspectiveTransformerTest(unittest.TestCase):
             np.array([[10, 10], [110, 15], [100, 200], [20, 190]], dtype="float32"),
         )
 
-    def test_warp_returns_expected_document_shape(self):
+    def test_warp_rotates_to_portrait_and_crops_border(self):
         image = np.zeros((120, 160, 3), dtype=np.uint8)
         points = np.array([[20, 10], [119, 10], [119, 89], [20, 89]])
 
         warped = PerspectiveTransformer.warp(image, points)
 
-        self.assertEqual(warped.shape, (79, 99, 3))
+        self.assertEqual(warped.shape, (99, 79, 3))
 
 
 if __name__ == "__main__":

@@ -5,19 +5,20 @@ from app.config import settings
 
 class Preprocessor:
     @staticmethod
-    def resize(image):
+    def resize(image, target_width=None):
         """
         Resize image while maintaining aspect ratio.
         """
 
+        target_width = target_width or settings.IMAGE_WIDTH
         height, width = image.shape[:2]
 
-        if width <= settings.IMAGE_WIDTH:
+        if width <= target_width:
             return image
 
-        ratio = settings.IMAGE_WIDTH / width
+        ratio = target_width / width
 
-        new_width = settings.IMAGE_WIDTH
+        new_width = target_width
         new_height = int(height * ratio)
 
         return cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_AREA)

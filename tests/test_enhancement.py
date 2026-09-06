@@ -24,6 +24,28 @@ class ImageEnhancerTest(unittest.TestCase):
 
         self.assertEqual(cleaned[10, 10], 255)
 
+    def test_color_mode_preserves_color_channels(self):
+        image = np.full((60, 80, 3), 180, dtype=np.uint8)
+        image[:, :, 1] = 210
+
+        enhanced = ImageEnhancer.enhance(image, mode="color")
+
+        self.assertEqual(enhanced.shape, image.shape)
+        self.assertEqual(enhanced.dtype, np.uint8)
+
+    def test_gray_mode_returns_grayscale_visibility_image(self):
+        image = np.full((60, 80, 3), 180, dtype=np.uint8)
+
+        enhanced = ImageEnhancer.enhance(image, mode="gray")
+
+        self.assertEqual(enhanced.shape, image.shape[:2])
+        self.assertEqual(enhanced.dtype, np.uint8)
+
+    def test_ensure_odd_block_size_normalizes_values(self):
+        self.assertEqual(ImageEnhancer.ensure_odd_block_size(2), 3)
+        self.assertEqual(ImageEnhancer.ensure_odd_block_size(10), 11)
+        self.assertEqual(ImageEnhancer.ensure_odd_block_size(11), 11)
+
 
 if __name__ == "__main__":
     unittest.main()
