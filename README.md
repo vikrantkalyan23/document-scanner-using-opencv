@@ -26,3 +26,15 @@ Run:
 ```bash
 python -m app.main
 ```
+
+Scan a different image from the `input` directory:
+
+```bash
+python -m app.main receipt.jpg
+```
+
+Open preview windows after saving output files:
+
+```bash
+python -m app.main document.jpeg --show
+```

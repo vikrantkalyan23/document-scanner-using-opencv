@@ -1,30 +1,31 @@
 from app.scanner.preprocessing import Preprocessor
 from app.scanner.edge_detection import EdgeDetector
 from app.scanner.contour_detection import ContourDetector
+from app.scanner.perspective import PerspectiveTransformer
+from app.scanner.enhancement import ImageEnhancer
 
 
 class DocumentScanner:
     def process(self, image):
-
-        # Step 1: Resize
         resized = Preprocessor.resize(image)
+        scale = image.shape[1] / resized.shape[1]
 
-        # Step 2: Grayscale
         gray = Preprocessor.grayscale(resized)
-
-        # Step 3: Blur
         blurred = Preprocessor.blur(gray)
-
-        # Step 4: Edge Detection
         edges = EdgeDetector.canny(blurred)
+        document_contour = ContourDetector.find_document_contour(edges)
 
-        # Step 5: Find Contours
-        contours = ContourDetector.find(edges)
+        if document_contour is None:
+            scanned = image.copy()
+            original_contour = None
+        else:
+            original_contour = document_contour.astype("float32") * scale
+            scanned = PerspectiveTransformer.warp(image, original_contour)
 
-        # Step 6: Draw contours
-        contours_image = ContourDetector.draw(resized, contours)
+        enhanced = ImageEnhancer.enhance(scanned)
+        contours_image = ContourDetector.draw_document(resized, document_contour)
 
-        print(f"Contours Found : {len(contours)}")
+        print(f"Document detected: {document_contour is not None}")
 
         return {
             "original": image,
@@ -33,5 +34,7 @@ class DocumentScanner:
             "blurred": blurred,
             "edges": edges,
             "contours": contours_image,
-            "contour_data": contours,
+            "scanned": scanned,
+            "enhanced": enhanced,
+            "contour_data": original_contour,
         }

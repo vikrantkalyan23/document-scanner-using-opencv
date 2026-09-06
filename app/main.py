@@ -1,3 +1,5 @@
+import argparse
+
 import cv2
 
 from app.scanner import DocumentScanner
@@ -14,13 +16,31 @@ from app.utils.file_utils import (
 )
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Scan a document image.")
+    parser.add_argument(
+        "filename",
+        nargs="?",
+        default="document.jpeg",
+        help="Input filename inside the input directory.",
+    )
+    parser.add_argument(
+        "--show",
+        action="store_true",
+        help="Display the processing windows after saving output files.",
+    )
+
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
 
     # -----------------------------------
     # 1. Load input image
     # -----------------------------------
 
-    image_path = get_input_path("document.jpeg")
+    image_path = get_input_path(args.filename)
 
     image = cv2.imread(str(image_path))
 
@@ -62,6 +82,10 @@ def main():
 
     save_image(get_output_path("06_contours.jpg"), result["contours"])
 
+    save_image(get_output_path("07_scanned.jpg"), result["scanned"])
+
+    save_image(get_output_path("08_enhanced.jpg"), result["enhanced"])
+
     print("\nProcessing completed!")
 
     print("\nGenerated files:")
@@ -72,10 +96,15 @@ def main():
     print("04_blurred.jpg")
     print("05_edges.jpg")
     print("06_contours.jpg")
+    print("07_scanned.jpg")
+    print("08_enhanced.jpg")
 
     # -----------------------------------
     # 6. Display stages
     # -----------------------------------
+
+    if not args.show:
+        return
 
     show_image("Original", result["original"])
 
@@ -84,6 +113,8 @@ def main():
     show_image("Edges", result["edges"])
 
     show_image("Contours", result["contours"])
+
+    show_image("Enhanced", result["enhanced"])
 
 
 if __name__ == "__main__":
